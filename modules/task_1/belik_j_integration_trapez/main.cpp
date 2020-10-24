@@ -33,9 +33,9 @@ TEST(Parallel_Operations_MPI, Test_Polyn) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::function<double(double)>f = [](double x) {return x * x - 2 * x - 5; };
-    double i2 = getParallelIntegration(f, -2, 4, 6);
+    double i2 = getParallelIntegration(f, -2, 4, 7);
     if (rank == 0) {
-        double i1 = getSequentialIntegration(f, -2, 4, 6);
+        double i1 = getSequentialIntegration(f, -2, 4, 7);
         EXPECT_NEAR(i1, i2, 1e-2);
     }
 }
@@ -45,6 +45,7 @@ TEST(Parallel_Operations_MPI, Test_Cube) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::function<double(double)>f = [](double x) { return x * x * x; };
     double i2 = getParallelIntegration(f, -100, 100, 100);
+
     if (rank == 0) {
         double i1 = getSequentialIntegration(f, -100, 100, 100);
         EXPECT_NEAR(i1, i2, 1e-2);

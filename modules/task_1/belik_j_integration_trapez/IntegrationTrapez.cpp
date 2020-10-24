@@ -6,10 +6,19 @@
 
 double getSequentialIntegration(const std::function<double(double)>& f, double a, double b, int n) {
     double sum = 0;
+    int zn = 1;
+    if (a > b)
+    {
+        zn = -1;
+        double temp = a;
+        a = b;
+        b = temp;
+    }
     double interval = (b - a) / static_cast<double>(n);
     for (int i = 0; i < n; i++)
         sum += ((f(a + static_cast<double>(i + 1) * interval) + f(a + static_cast<double>(i) * interval)) * 0.5);
     sum *= interval;
+    sum *= zn;
     return sum;
 }
 
@@ -19,6 +28,14 @@ double getParallelIntegration(const std::function<double(double)>& f, double a, 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (size == 1 || n < size)
         return getSequentialIntegration(f, a, b, n);
+    int zn = 1;
+    if (a > b)
+    {
+        zn = -1;
+        double temp = a;
+        a = b;
+        b = temp;
+    }
     double interval = (b - a) / static_cast<double>(n);
     int count_interv = n / size;
     double local_integral = 0, global_integral = 0;
@@ -29,11 +46,11 @@ double getParallelIntegration(const std::function<double(double)>& f, double a, 
         begin_interval += interval;
         end_interval += interval;
     }
-    local_integral *= interval;
+    local_integral *= interval * zn;
     MPI_Reduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     if ((rank == 0) && (n % size != 0)) {
         double rem = getSequentialIntegration(f, b - (n % size) * interval, b, n % size);
-        global_integral += rem;
+        global_integral += rem * zn;
     }
     return global_integral;
 }
