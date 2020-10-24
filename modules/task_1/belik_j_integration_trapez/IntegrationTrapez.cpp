@@ -7,8 +7,7 @@
 double getSequentialIntegration(const std::function<double(double)>& f, double a, double b, int n) {
     double sum = 0;
     int zn = 1;
-    if (a > b)
-    {
+    if (a > b) {
         zn = -1;
         double temp = a;
         a = b;
@@ -29,8 +28,7 @@ double getParallelIntegration(const std::function<double(double)>& f, double a, 
     if (size == 1 || n < size)
         return getSequentialIntegration(f, a, b, n);
     int zn = 1;
-    if (a > b)
-    {
+    if (a > b) {
         zn = -1;
         double temp = a;
         a = b;
